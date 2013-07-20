@@ -11,11 +11,10 @@ namespace sys\libraries;
 /**
  * Include the Smarty Library
  */
-//require_once BASEPATH.'thirdparty/smarty3/Smarty.class.php';
-require_once ROOT.'includes/smarty/Smarty.class.php';
+require_once BASEPATH.'thirdparty/smarty3/Smarty.class.php';
 
 // Re-Register(prepend) Smarty3-Autoload so it triggers before our own autoload
-// spl_autoload_register('smartyAutoload', true, true);
+spl_autoload_register('smartyAutoload', true, true);
 
 use sys\core\Config;
 use sys\core\Exception;
