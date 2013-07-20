@@ -1,0 +1,4 @@
+RewriteEngine on
+RewriteRule ^$ index.php [L]
+RewriteCond $1 !^(index\.php|assets|site|README|COMMITS)
+RewriteRule ^(.*)$ index.php?/$1 [L]

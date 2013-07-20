@@ -1,0 +1,94 @@
+<h1 id="application">Application</h1>
+<p>The application files go inside the <code>application</code> directory. If the parent directory is <code>maveric</code> then the URLs are as <code>http://localhost/maveric/test.php</code></p>
+<h1 id="controllers">Controllers</h1>
+<h2 id="naming">Naming</h2>
+<p>Class must be named in capitalized way. File name must match the class name.
+Note: Stick to one class per file. Namespaces must match the directory structure.</p>
+<blockquote>
+<p>If a user requests /test.php the system will look for the class Test in Test.php</p>
+</blockquote>
+<p>Every controller is defined within the <code>controllers</code> namespace and extrends the <code>core\Controller</code> class</p>
+<p>There are 3 methods that are called in the following scenarios:</p>
+<p><strong><code>get()</code></strong>
+Triggers when a GET request is executed.</p>
+<p><strong><code>post()</code></strong>
+Triggers when a POST request is executed.</p>
+<p><strong><code>index()</code></strong>
+Triggers when a neither a <code>get()</code> or <code>post()</code> are defined</p>
+<h2 id="accessing-input">Accessing Input</h2>
+<p>The <code>core\Controller</code> has the object for <code>core\Input</code>. The input vars can be accessed as</p>
+<pre><code>$this-&gt;input-&gt;get('foo');
+$this-&gt;input-&gt;post('bar'); 
+$this-&gt;input-&gt;server('PHP_SELF');
+</code></pre>
+
+<p>The methods return <strong><code>null</code></strong> if the variable is not set.</p>
+<h2 id="accessing-config">Accessing Config</h2>
+<p>The <code>core\Controller</code> has the singleton object for <code>core\Config</code> to load configuration details defined in <code>config.php</code>.</p>
+<pre><code># config/config.php
+
+$config['log_path'] = '/var/log/maveric';
+$config['database'] = array(
+    'host'  =&gt; 'localhost',
+    'username'  =&gt; 'test'
+);
+</code></pre>
+
+<pre><code># controllers/Test.php
+
+$this-&gt;config-&gt;item('log_path');
+$this-&gt;config-&gt;item('database', 'host'); // Multidimensional array
+</code></pre>
+
+<h1 id="models">Models</h1>
+<p>Every model is defined within the <code>models</code> namespace and extrends the <code>core\Model</code> class and has access to <code>core\Input</code>, <code>core\Log</code> and <code>core\Config</code> objects</p>
+<pre><code>namespace models;
+use core\Model;
+
+class Test extends Model
+{
+    public function get_data()
+    {
+        return array(
+            'dummy',
+            'data'
+        );
+    }
+}
+</code></pre>
+
+<h1 id="example">Example</h1>
+<pre><code>namespace controllers;
+use core\Controller;
+use models\Test as TestModel;
+
+class Test extends Controller
+{
+    public function index()
+    {
+        echo 'This method fires when either a valid get/post method is not present';
+    }
+
+    public function post()
+    {
+        echo 'Post Data:', PHP_EOL;
+        var_dump($this-&gt;input-&gt;post());
+    }
+
+    public function get()
+    {
+        $this-&gt;tm = new TestModel();
+        $data = $this-&gt;tm-&gt;get_data();
+        echo 'Get Data:', PHP_EOL;
+        var_dump($this-&gt;input-&gt;get());
+        var_dump($this-&gt;config-&gt;item('database', 'host'));
+        var_dump($this-&gt;_process($data));
+        var_dump(Url::base('new_link.php'));
+    }
+
+    protected function _process($data)
+    {
+        return implode(' ', $data);
+    }
+}
+</code></pre>
