@@ -20,18 +20,18 @@ class Config
 	/**
 	 * @var Config $instance Singleton instance of the class
 	 */
-	protected static $instance = null;
+	protected static $_instance = null;
 
 	/**
 	 * @return Config Return the singleton instance of the class
 	 */
 	public static function instance()
 	{
-		if (self::$instance === null)
+		if (self::$_instance === null)
 		{
-			self::$instance = new self();
+			self::$_instance = new self();
 		}
-		return self::$instance;
+		return self::$_instance;
 	}
 
 	public $config = array();

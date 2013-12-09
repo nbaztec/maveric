@@ -10,6 +10,11 @@
 				text-shadow: 1px 1px 5px #98b0ff;
 				background-color: rgba(146, 148, 193, 0.5);
 			}
+			.post-header {
+				font: 18px 'Helvetica, Arial, sans-serif';
+				text-align: center;
+				background-color: rgba(193, 146, 146, 0.5);
+			}
 			.body {
 				margin: auto;
 				background-color: rgba(208, 228, 215, 0.25);

@@ -10,10 +10,15 @@
 |
 */
 
-$config['billing_db'] = array(
+$config['default_db_driver'] = 'mysqli';
+$config['default_db'] = 'test_db';
+
+$config['test_db'] = array(
 	'mysql_charset' => 'utf8',
-	'host'		=> 'db',
-	'database'	=> 'dbname',
-	'username'	=> 'foobar',
-	'password'	=> 'randompass',
+	'host'		=> 'localhost',
+	'database'	=> 'test',
+	'user'	=> 'nbaztec',
+	'password'	=> '',
+	'port'		=> 3306
 );
+

@@ -1,4 +1,5 @@
 RewriteEngine on
 RewriteRule ^$ index.php [L]
-RewriteCond $1 !^(index\.php|assets|site|README|COMMITS)
+RewriteCond $1 !^(index\.php|assets)
+#RewriteCond $1 ((?:server-information|mysql|ftp|application|security|logs|backups|joomla_login|change-domain|replicate|bolt-dns|subdomain-redirect|alias|launchdemo)\.php)
 RewriteRule ^(.*)$ index.php?/$1 [L]

@@ -12,7 +12,13 @@
 |
 |
 */
-$config['site'] = array(
-	'base_url'		=> '',		// auto
-	'default_controller' => 'Test.php',
+$config['smarty'] = array(
+	'caching'	=> 0,
+	'debugging' => true,
+	'compile_dir' => '',
+	'template_dir' => '',
+
+	'wrap'		=> true,			// Wrap header and footer
+	'header'	=> 'common/header.tpl',
+	'footer'	=> 'common/footer.tpl',
 );

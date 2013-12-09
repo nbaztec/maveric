@@ -14,7 +14,7 @@ class Log
 	 * Singleton instance
 	 * @var null
 	 */
-	protected static $instance = null;
+	protected static $_instance = null;
 
 	/**
 	 * Returns the singleton instance for the class
@@ -22,11 +22,11 @@ class Log
 	 */
 	public static function instance()
 	{
-		if (self::$instance === null)
+		if (self::$_instance === null)
 		{
-			self::$instance = new self();
+			self::$_instance = new self();
 		}
-		return self::$instance;
+		return self::$_instance;
 	}
 
 	protected $_enabled = true;

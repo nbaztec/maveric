@@ -58,7 +58,7 @@ class Url
 	{
 		if ( ! preg_match('#^(\w+:)?//#i', $uri))
 		{
-			$uri = site_url($uri);
+			$uri = self::base($uri);
 		}
 
 		// IIS environment likely? Use 'refresh' for better compatibility
@@ -85,5 +85,20 @@ class Url
 				break;
 		}
 		exit;
+	}
+
+	/**
+	 * Gets the clean domain name from a url
+	 * @param $url
+	 * @return string|null
+	 */
+	public static function get_domain($url)
+	{
+		if (preg_match('!(?:https?://)?(?:www\.)?([^/]+).*$!', $url, $m))
+		{
+			return $m[1];
+		}
+
+		return null;
 	}
 }

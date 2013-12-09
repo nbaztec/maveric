@@ -13,8 +13,12 @@ require APPPATH.'config/constants.php';
 require BASEPATH.'core/Exception.php';
 require BASEPATH.'core/Loader.php';
 
+/**
+ * Custom Includes
+ */
+
 // Maveric version
-define('MVC_VERSION', '0.3');
+define('MVC_VERSION', '1.0');
 
 // Create path from URI
 $uri = $_SERVER['REQUEST_URI'];
@@ -50,8 +54,11 @@ foreach ($path as &$elem)
 }
 // Capitalize the last item (class name) and strip the extension
 $ridx = count($path) - 1;
-$path[$ridx] = trim(ucwords(rtrim($path[$ridx], '.php')));
-
+$path[$ridx] = str_replace('-', '_', trim(ucwords(substr($path[$ridx], 0, -4))));
+if ( ! $path[$ridx] )
+{
+	die('Bad controller: '.$path[$ridx]);
+}
 // Prepend the necessary namespace part
 $class = 'app\\controllers\\'.implode('\\', $path);
 
@@ -78,4 +85,7 @@ elseif ( ! is_callable(array($class, 'index')))
 }
 
 // And we have lift off...
-$MVC->$method();
+if ($MVC->dispatch_request())
+{
+	$MVC->$method();
+}

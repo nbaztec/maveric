@@ -5,13 +5,8 @@ use app\models\Test as TestModel;
 use app\helpers\Url;
 use sys\libraries\Smarty;
 
-class Test extends Controller
+class Demo extends Controller
 {
-	public function __construct()
-	{
-		parent::__construct();
-	}
-	
 	public function index()
 	{
 		echo 'This method fires when either a valid get/post method is not present';
@@ -29,7 +24,7 @@ class Test extends Controller
 		$dummy = $this->_process($this->tm->get_data());
 
 		$this->smarty = Smarty::instance();
-		$this->smarty->view(array('post-header.tpl', 'body.tpl'), array(
+		$this->smarty->view(array('body.tpl'), array(
 			'url'	=> new Url(),
 			'title' => 'Test Page',
 			'data'	=> array(

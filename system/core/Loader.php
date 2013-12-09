@@ -36,6 +36,7 @@ function mvc_autoloader($file)
 			}
 		}
 
+		/* We will be nice and pass on to the next loader
 		// If the class wasn't loaded for some darn reason
 		if ( ! $found && ! class_exists($file))
 		{
@@ -46,6 +47,7 @@ function mvc_autoloader($file)
 				Exception::error('Unable to load class : '.$file);
 			}
 		}
+		*/
 	}
 }
 

@@ -21,7 +21,7 @@ class Input
 	 * HTTP headers
 	 * @var array
 	 */
-	protected $headers = array();
+	protected $_headers = array();
 
 	public function __construct()
 	{
@@ -297,10 +297,10 @@ class Input
 			$key = str_replace(array('_', '-'), ' ', strtolower($key));
 			$key = str_replace(' ', '-', ucwords($key));
 
-			$this->headers[$key] = $val;
+			$this->_headers[$key] = $val;
 		}
 
-		return $this->headers;
+		return $this->_headers;
 	}
 
 	// --------------------------------------------------------------------
@@ -312,17 +312,17 @@ class Input
 	 */
 	public function header_item($index)
 	{
-		if (empty($this->headers))
+		if (empty($this->_headers))
 		{
 			$this->headers();
 		}
 
-		if ( ! isset($this->headers[$index]))
+		if ( ! isset($this->_headers[$index]))
 		{
 			return null;
 		}
 
-		return $this->headers[$index];
+		return $this->_headers[$index];
 	}
 
 	// --------------------------------------------------------------------
