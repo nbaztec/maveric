@@ -12,8 +12,23 @@ use sys\helpers\Url as BaseUrl;
 
 class Url extends BaseUrl
 {
-	public static function billing($uri='')
+	public static function asset($uri='')
 	{
-		return Controller::instance()->config->site_url('billing', $uri);
+		return Controller::instance()->config->site_url('asset', $uri);
+	}
+
+	public static function asset_path($uri='')
+	{
+		return Controller::instance()->config->site_url('asset_path', $uri);
+	}
+
+	public static function view($path)
+	{
+		return VIEWPATH.ltrim($path, '/');
+	}
+
+	public static function referrer()
+	{
+		return $_SERVER['HTTP_REFERER'];
 	}
 }

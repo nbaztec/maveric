@@ -14,6 +14,10 @@ namespace sys\core;
  */
 class Library
 {
+	protected $input = null;
+	protected $config = null;
+	protected $log = null;
+
 	public function __construct()
 	{
 		$this->input = new Input();

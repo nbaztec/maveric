@@ -14,9 +14,6 @@
 */
 $config['site'] = array(
 	'base_url'		=> '',
-	'billing_url'	=> 'http://foo.bar.baz/',
-
-	'default_controller' => 'Test',
-
-	'demo_products' => array(38, 102,122),
+	'asset_path_url' => '/dev/fluenz/assets',
+	'default_controller' => 'Index'
 );

@@ -21,7 +21,7 @@ class Input
 	 * HTTP headers
 	 * @var array
 	 */
-	protected $headers = array();
+	protected $_headers = array();
 
 	public function __construct()
 	{
@@ -241,7 +241,19 @@ class Input
 	 */
 	public function set_session($index, $value)
 	{
-		$_SESSION[$index] = $value;
+		$index = func_get_args();
+		$value = array_pop($index);
+
+		$array = &$_SESSION;
+		foreach ($index as $idx)
+		{
+			if ( ! isset($array[$idx]))
+			{
+				$array[$idx] = array();
+			}
+			$array = &$array[$idx];
+		}
+		$array = $value;
 	}
 
 	// --------------------------------------------------------------------
@@ -252,7 +264,24 @@ class Input
 	 */
 	public function unset_session($index)
 	{
-		unset($_SESSION[$index]);
+		$index = func_get_args();
+		$array = &$_SESSION;
+		$top = null;
+		$idx = null;
+		foreach ($index as $idx)
+		{
+			if ( ! isset($array[$idx]))
+			{
+				$array[$idx] = array();
+			}
+			$top = &$array;
+			$array = &$array[$idx];
+		}
+
+		if (is_array($top))
+		{
+			unset($top[$idx]);
+		}
 	}
 
 	// --------------------------------------------------------------------
@@ -297,10 +326,10 @@ class Input
 			$key = str_replace(array('_', '-'), ' ', strtolower($key));
 			$key = str_replace(' ', '-', ucwords($key));
 
-			$this->headers[$key] = $val;
+			$this->_headers[$key] = $val;
 		}
 
-		return $this->headers;
+		return $this->_headers;
 	}
 
 	// --------------------------------------------------------------------
@@ -312,17 +341,17 @@ class Input
 	 */
 	public function header_item($index)
 	{
-		if (empty($this->headers))
+		if (empty($this->_headers))
 		{
 			$this->headers();
 		}
 
-		if ( ! isset($this->headers[$index]))
+		if ( ! isset($this->_headers[$index]))
 		{
 			return null;
 		}
 
-		return $this->headers[$index];
+		return $this->_headers[$index];
 	}
 
 	// --------------------------------------------------------------------

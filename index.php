@@ -7,6 +7,7 @@
  */
 
 // Define ane evironment variable
+$_SERVER['MVC_ENV'] = 'development';
 define('ENVIRONMENT', isset($_SERVER['MVC_ENV']) ? $_SERVER['MVC_ENV'] : 'development');
 
 /*
@@ -179,6 +180,12 @@ switch (ENVIRONMENT)
 	}
 
 	define('VIEWPATH', $view_folder);
+/*
+ * --------------------------------------------------------------------
+ * CUSTOM INCLUDES
+ * --------------------------------------------------------------------
+ */
+
 
 /*
  * --------------------------------------------------------------------

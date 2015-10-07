@@ -14,7 +14,7 @@ class Controller
 	 * Singleton isntance
 	 * @var null|Controller
 	 */
-	protected static $instance = null;
+	protected static $_instance = null;
 
 	/**
 	 * Returns the singleton instance for the controller
@@ -22,20 +22,34 @@ class Controller
 	 */
 	public static function instance()
 	{
-		if (self::$instance === null)
+		if (self::$_instance === null)
 		{
-			self::$instance = new self();
+			self::$_instance = new self();
 		}
-		return self::$instance;
+		return self::$_instance;
 	}
+
+	protected  $_dispatch_request = true;
+	protected $_params = array();
+
+	public $input = null;
+	public $config = null;
+	public $db = null;
+	public $log = null;
 
 	public function __construct()
 	{
-		self::$instance = $this;
+		self::$_instance = $this;
 		$this->input = new Input();
 		$this->config = Config::instance();
+		$this->db = Database::instance();
 		$this->log = Log::instance();
 		$this->log->write('debug', 'Controller Class Initialized');
+	}
+
+	public function dispatch_request()
+	{
+		return $this->_dispatch_request;
 	}
 
 	// --------------------------------------------------------------------

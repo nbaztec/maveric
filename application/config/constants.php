@@ -44,5 +44,3 @@ define('FOPEN_READ_WRITE_CREATE_STRICT',		'x+b');
 | Custom Constants go here
 |
 */
-define('WHMCS', true);
-define ('ROOT', $_SERVER['DOCUMENT_ROOT'].'/');

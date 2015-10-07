@@ -41,11 +41,11 @@ class Url
 	 * Returns the current URL
 	 * @return mixed
 	 */
-	public static function current()
+	public static function current($query_string=true)
 	{
-		return isset($_SERVER['PATH_INFO'])
-			? $_SERVER['PATH_INFO']
-			: $_SERVER['REQUEST_URI'];
+		return $query_string
+				? substr($_SERVER['REQUEST_URI'], strlen(dirname($_SERVER['SCRIPT_NAME'])))
+				: $_SERVER['PHP_SELF'];
 	}
 
 	/**
@@ -58,7 +58,7 @@ class Url
 	{
 		if ( ! preg_match('#^(\w+:)?//#i', $uri))
 		{
-			$uri = site_url($uri);
+			$uri = self::base($uri);
 		}
 
 		// IIS environment likely? Use 'refresh' for better compatibility
@@ -85,5 +85,20 @@ class Url
 				break;
 		}
 		exit;
+	}
+
+	/**
+	 * Gets the clean domain name from a url
+	 * @param $url
+	 * @return string|null
+	 */
+	public static function get_domain($url)
+	{
+		if (preg_match('!(?:https?://)?(?:www\.)?([^/]+).*$!', $url, $m))
+		{
+			return $m[1];
+		}
+
+		return null;
 	}
 }

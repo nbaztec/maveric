@@ -6,108 +6,169 @@
  *
  */
 
-namespace sys\libraries;
-
-/**
- * Include the Smarty Library
- */
-require_once BASEPATH.'thirdparty/smarty3/Smarty.class.php';
-
-// Re-Register(prepend) Smarty3-Autoload so it triggers before our own autoload
-spl_autoload_register('smartyAutoload', true, true);
-
-use sys\core\Config;
-use sys\core\Exception;
-use sys\core\Library;
-use \Smarty as BaseSmarty;
-
-class Smarty extends Library
+namespace sys\libraries
 {
-	/**
-	 * Singleton instance
-	 * @var null|Smarty
-	 */
-	protected static $instance = null;
+	// Re-Register(prepend) Smarty3-Autoload so it triggers before our own autoload
+	// spl_autoload_register('smartyAutoload', true, true);
 
 	/**
-	 * Returns the singleton instance for the class
-	 * @return Smarty
+	 * Include the Smarty Library
 	 */
-	public static function instance()
+	//require_once BASEPATH.'thirdparty/smarty3/Smarty.class.php';
+	require_once ROOT.'includes/classes/Smarty/Smarty.class.php';
+
+	use sys\core\Config;
+	use sys\core\Exception;
+	use sys\core\Library;
+	use \Smarty as BaseSmarty;
+	use \WHMCS_Smarty as BaseSmartyWHMCS;
+
+	class Smarty extends Library
 	{
-		if (self::$instance === null)
+		/**
+		 * Singleton instance
+		 * @var null|Smarty
+		 */
+		protected static $_instance = null;
+
+		/**
+		 * Returns the singleton instance for the class
+		 * @return Smarty
+		 */
+		public static function instance()
 		{
-			self::$instance = new self();
-		}
-		return self::$instance;
-	}
-
-	/**
-	 * The smarty object
-	 * @var null|\Smarty
-	 */
-	protected $smarty = null;
-
-	function __construct()
-	{
-		parent::__construct();
-
-		$this->compile_dir = $this->config->item('smarty', 'compile_dir')?:APPPATH.'var/template_c';
-		$this->template_dir = $this->config->item('smarty', 'template_dir')?:APPPATH.'views/templates';
-
-		// Test the compiled templates directory, create if necessary
-		file_exists($this->compile_dir) OR mkdir($this->compile_dir, DIR_WRITE_MODE, true);
-
-		// Test the template directory
-		if ( ! is_dir($this->template_dir))
-		{
-			Exception::error('Template directory does not exist');
+			if (self::$_instance === null)
+			{
+				self::$_instance = new self();
+			}
+			return self::$_instance;
 		}
 
-		// Assign some common variable to smarty
-		$this->smarty = new BaseSmarty();
-		$this->smarty->compile_dir = $this->compile_dir;
-		$this->smarty->template_dir = $this->template_dir;
-		$this->smarty->assign( 'APPPATH', APPPATH );
-		$this->smarty->assign( 'BASEPATH', BASEPATH );
+		/**
+		 * The smarty object
+		 * @var null|\Smarty
+		 */
+		protected $_smarty = null;
 
-		$this->log->write('debug', "Smarty Class Initialized");
-	}
 
-	/**
-	 * Renders the smarty template
-	 * @param string|array $template Path to smarty templates to render
-	 * @param array $data Params to be passed to smarty
-	 * @param bool $return If set to true, the output is returned
-	 * @return string
-	 */
-	function view($template, $data = array(), $return = false)
-	{
-		foreach ($data as $key => $val)
+		/**
+		 * Wrap the template with header & footer
+		 * @var bool
+		 */
+		protected $_wrap = false;
+
+		/**
+		 * The vars to attach to template
+		 * @var string
+		 */
+		protected $_ext_vars = false;
+
+		public function __construct()
 		{
-			$this->smarty->assign($key, $val);
+			parent::__construct();
+
+			$this->config->load('smarty.php');
+			$this->compile_dir = $this->config->item('smarty', 'compile_dir')?:APPPATH.'var/template_c';
+			$this->template_dir = $this->config->item('smarty', 'template_dir')?:APPPATH.'views/templates';
+			$this->_wrap = $this->config->item('smarty', 'wrap')?:false;
+			$this->_ext_vars = array();
+
+			// Test the compiled templates directory, create if necessary
+			file_exists($this->compile_dir) OR mkdir($this->compile_dir, DIR_WRITE_MODE, true);
+
+			// Test the template directory
+			if ( ! is_dir($this->template_dir))
+			{
+				Exception::error('Template directory does not exist');
+			}
+
+			// Assign some common variable to smarty
+			$this->_smarty = new BaseSmartyWHMCS();	// WHMCS version of smarty
+			$this->_smarty->caching = $this->config->item('smarty', 'caching')?:0;
+			$this->_smarty->debugging = $this->config->item('smarty', 'debugging')?:true;
+			$this->_smarty->compile_dir = $this->compile_dir;
+			$this->_smarty->template_dir = $this->template_dir;
+			$this->_smarty->assign( 'APPPATH', APPPATH );
+			$this->_smarty->assign( 'BASEPATH', BASEPATH );
+
+			$this->log->write('debug', "Smarty Class Initialized");
 		}
 
-
-		if ( ! is_array($template))
+		/**
+		 * Renders the smarty template
+		 * @param string|array $template Path to smarty templates to render
+		 * @param array $data Params to be passed to smarty
+		 * @param bool $return If set to true, the output is returned
+		 * @return string
+		 */
+		public function view($template, $data = array(), $return = false)
 		{
-			$template = array($template);
+			foreach (array_merge($this->_ext_vars, $data) as $key => $val)
+			{
+				$this->_smarty->assign($key, $val);
+			}
+
+
+			if ( ! is_array($template))
+			{
+				$template = array($template);
+			}
+
+			if ($this->_wrap)
+			{
+				array_unshift($template, $this->config->item('smarty', 'header')?:'header.tpl');
+				$template[] = $this->config->item('smarty', 'footer')?:'footer.tpl';
+			}
+
+			$out = '';
+			foreach ($template as $t)
+			{
+				//echo PHP_EOL, 'E', $t, PHP_EOL;
+				$out .= $this->_smarty->fetch($this->_template($t));
+				//echo $this->_smarty->fetch($t);
+				//echo PHP_EOL, 'D -----------', PHP_EOL;
+			}
+
+			if ($return == false)
+			{
+
+				echo $out;
+			}
+			else
+			{
+				return $out;
+			}
 		}
 
-		$out = '';
-		foreach ($template as $t)
+		public function attach($key, $value=null)
 		{
-			$out .= $this->smarty->fetch($t);
+			if (is_array($key))
+			{
+				$this->_ext_vars = array_merge($this->_ext_vars, $key);
+			}
+			else
+			{
+				$this->_ext_vars[$key] = $value;
+			}
 		}
 
-		if ($return == false)
+		public function get_var($key)
 		{
+			if ($key === null)
+			{
+				return $this->_ext_vars;
+			}
+			else if (isset($this->_ext_vars[$key]))
+			{
+				return $this->_ext_vars[$key];
+			}
 
-			echo $out;
+			return null;
 		}
-		else
+
+		protected function _template($name)
 		{
-			return $out;
+			return $name;
 		}
 	}
 }
